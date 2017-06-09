@@ -17,7 +17,7 @@ public class LaunchTest {
 
     @Test
     public void downloadAndVerifyZip() throws IOException {
-        TestSpec spec = TestSpec.hardcoded();
+        TestSpec spec = TestSpec.fromSystemProperties();
 
         TestDriver test = new TestDriver(driver, spec.target);
 

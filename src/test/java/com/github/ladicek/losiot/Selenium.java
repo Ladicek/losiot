@@ -8,7 +8,7 @@ import org.openqa.selenium.firefox.FirefoxProfile;
 public final class Selenium {
     private Selenium() {} // avoid instantiation
 
-    /** Assumes Firefox 45 ESR. */
+    /** Assumes that Firefox 45 ESR is on PATH. */
     public static WebDriver firefox() {
         FirefoxProfile profile = new FirefoxProfile();
         profile.setPreference("browser.download.folderList", 2);

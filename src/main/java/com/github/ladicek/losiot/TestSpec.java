@@ -1,5 +1,7 @@
 package com.github.ladicek.losiot;
 
+import java.util.Objects;
+
 public final class TestSpec {
     public final Target target;
     public final DeploymentType deploymentType;
@@ -18,8 +20,18 @@ public final class TestSpec {
     }
 
     public static TestSpec fromSystemProperties() {
-        // TODO
-        throw new UnsupportedOperationException("Not implemented yet");
+        String target = Objects.requireNonNull(System.getProperty("losiot.target"));
+        String deploymentType = Objects.requireNonNull(System.getProperty("losiot.deployment.type"));
+        String mission = Objects.requireNonNull(System.getProperty("losiot.mission"));
+        String runtime = Objects.requireNonNull(System.getProperty("losiot.runtime"));
+
+        return new TestSpec(
+                Target.valueOf(target),
+                DeploymentType.valueOf(deploymentType),
+                Mission.valueOf(mission),
+                Runtime.valueOf(runtime),
+                MavenCoordinates.forTest()
+        );
     }
 
     private TestSpec(Target target, DeploymentType deploymentType, Mission mission, Runtime runtime, MavenCoordinates mavenCoordinates) {
