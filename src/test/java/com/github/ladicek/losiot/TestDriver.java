@@ -23,7 +23,7 @@ public final class TestDriver {
         }
 
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, 60);
+        this.wait = new WebDriverWait(driver, 10);
         this.by = new ElementSelectors();
         this.target = target;
     }
