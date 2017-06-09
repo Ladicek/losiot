@@ -44,5 +44,10 @@ public final class ElementSelectors {
                     .filter(el -> el.getAttribute("disabled") == null)
                     .collect(Collectors.toList());
         }
+
+        @Override
+        public String toString() {
+            return delegate.toString() + " (with Angular crap filtered out)";
+        }
     }
 }
