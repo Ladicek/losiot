@@ -9,16 +9,6 @@ public final class TestSpec {
     public final Runtime runtime;
     public final MavenCoordinates mavenCoordinates;
 
-    public static TestSpec hardcoded() {
-        return new TestSpec(
-                Target.STAGE,
-                DeploymentType.ZIP,
-                Mission.M100_HTTP_API,
-                Runtime.WILDFLY_SWARM,
-                MavenCoordinates.forTest()
-        );
-    }
-
     public static TestSpec fromSystemProperties() {
         String target = Objects.requireNonNull(System.getProperty("losiot.target"));
         String deploymentType = Objects.requireNonNull(System.getProperty("losiot.deployment.type"));

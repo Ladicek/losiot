@@ -19,7 +19,7 @@ public class LaunchTest {
     public void downloadAndVerifyZip() throws IOException {
         TestSpec spec = TestSpec.fromSystemProperties();
 
-        TestDriver test = new TestDriver(driver, spec.target);
+        TestDriver test = TestDriver.create(driver, spec.target);
 
         test.loadInitialPage();
         test.startWizard();
