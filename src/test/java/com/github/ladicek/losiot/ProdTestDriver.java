@@ -39,8 +39,8 @@ public final class ProdTestDriver implements TestDriver {
     public void startWizard() {
         driver.findElement(by.cssSelector(HIDDEN_BUTTON_SELECTOR)).click();
 
-        wait.until(ExpectedConditions.elementToBeClickable(by.buttonText("I will build and run locally")));
-        wait.until(ExpectedConditions.elementToBeClickable(by.buttonText("Use OpenShift Online to build and deploy")));
+        wait.until(ExpectedConditions.elementToBeClickable(by.buttonText("Set up manual project")));
+        wait.until(ExpectedConditions.elementToBeClickable(by.buttonText("Set up continuous delivery")));
     }
 
     @Override
@@ -50,7 +50,7 @@ public final class ProdTestDriver implements TestDriver {
             throw new UnsupportedOperationException("Deployment type " + deploymentType + " not yet implemented");
         }
 
-        driver.findElement(by.buttonText("I will build and run locally")).click();
+        driver.findElement(by.buttonText("Set up manual project")).click();
 
         wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("wizard"), "Missions are preconfigured, functioning applications"));
     }
