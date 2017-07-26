@@ -69,7 +69,7 @@ public final class ProdTestDriver implements TestDriver {
 
     @Override
     public void selectRuntime(Runtime runtime) {
-        driver.findElements(by.cssSelector("h2"))
+        driver.findElements(by.cssSelector("h3"))
                 .stream()
                 .filter(el -> el.getText().contains(runtime.text))
                 .forEach(WebElement::click);
@@ -101,12 +101,12 @@ public final class ProdTestDriver implements TestDriver {
 
         next();
 
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("wizard"), "Your project is ready"));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("deploy"), "Your project is ready"));
     }
 
     @Override
     public void checkSummary(Mission mission, Runtime runtime, MavenCoordinates coords) {
-        String summary = driver.findElement(by.tagName("wizard")).getText();
+        String summary = driver.findElement(by.tagName("deploy")).getText();
 
         assertThat(summary)
                 .as("Mission %s must be shown in summary", mission)

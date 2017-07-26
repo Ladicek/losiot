@@ -95,7 +95,7 @@ public final class StageTestDriver implements TestDriver {
 
         next();
 
-        wait.until(ExpectedConditions.visibilityOfElementLocated(by.tagName("deploy")));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("deploy"), "Your project is ready"));
     }
 
     @Override
