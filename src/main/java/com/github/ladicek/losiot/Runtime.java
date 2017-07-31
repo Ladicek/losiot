@@ -11,4 +11,8 @@ public enum Runtime {
     Runtime(String text) {
         this.text = text;
     }
+
+    public boolean isJava() {
+        return this == WILDFLY_SWARM || this == VERTX || this == SPRING_BOOT;
+    }
 }

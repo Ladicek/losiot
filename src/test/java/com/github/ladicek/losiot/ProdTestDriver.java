@@ -126,6 +126,10 @@ public final class ProdTestDriver implements TestDriver {
         assertThat(summary)
                 .as("Maven version %s must be shown in summary", coords.version)
                 .contains(coords.version);
+
+        assertThat(summary)
+                .as("{guideName} must not be shown in summary")
+                .doesNotContain("{guideName}");
     }
 
     @Override

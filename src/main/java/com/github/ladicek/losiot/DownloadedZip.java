@@ -45,6 +45,12 @@ public final class DownloadedZip implements AutoCloseable {
         this.file = file;
     }
 
+    public boolean exists(String path) throws IOException {
+        try (ZipFile zip = new ZipFile(file.toFile())) {
+            return zip.getEntry(path) != null;
+        }
+    }
+
     public Optional<String> readFileAsString(String fileName) throws IOException {
         try (ZipFile zip = new ZipFile(file.toFile())) {
             ZipEntry entry = zip.getEntry(fileName);

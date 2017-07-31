@@ -34,7 +34,7 @@ public class LaunchTest {
             String pomPath = spec.mavenCoordinates.artifactId + "/pom.xml";
             Optional<String> pomText = zip.readFileAsString(pomPath);
             assertThat(pomText)
-                    .as("POM file %s must be present", pomPath)
+                    .as("pom.xml file must be present", pomPath)
                     .isPresent();
             pomText.ifPresent(pom -> {
                 assertThat(pom)
@@ -51,7 +51,7 @@ public class LaunchTest {
             String licensePath = spec.mavenCoordinates.artifactId + "/LICENSE";
             Optional<String> licenseText = zip.readFileAsString(licensePath);
             assertThat(licenseText)
-                    .as("License file %s must be present")
+                    .as("LICENSE file must be present")
                     .isPresent();
             licenseText.ifPresent(license -> {
                 assertThat(license)
@@ -59,6 +59,33 @@ public class LaunchTest {
                         .contains("Apache License")
                         .contains("Version 2.0, January 2004");
             });
+
+            if (spec.target == Target.STAGE) { // not yet in PROD
+                String readmePath = spec.mavenCoordinates.artifactId + "/README.adoc";
+                Optional<String> readmeText = zip.readFileAsString(readmePath);
+                assertThat(readmeText)
+                        .as("README.adoc file must be present")
+                        .isPresent();
+                readmeText.ifPresent(readme -> {
+                    assertThat(readme)
+                            .as("Mission %s must be shown in README", spec.mission)
+                            .contains(spec.mission.text);
+                    assertThat(readme)
+                            .as("Runtime %s must be shown in README", spec.runtime)
+                            .contains(spec.runtime.text);
+
+                    assertThat(readme)
+                            .as("README for .zip deployment shouldn't contain 'git clone'")
+                            .doesNotContain("git clone");
+                });
+            }
+
+            if (spec.runtime.isJava()) {
+                String dir = spec.mavenCoordinates.artifactId + "/src/main/java/io/openshift/booster";
+                assertThat(zip.exists(dir))
+                        .as("src/main/java/io/openshift/booster should exist in the .zip")
+                        .isTrue();
+            }
 
             // ideally, we should unpack the .zip, run a Maven build, maybe execute tests etc. in here,
             // but this is already covered by booster testing, so it isn't high priority
