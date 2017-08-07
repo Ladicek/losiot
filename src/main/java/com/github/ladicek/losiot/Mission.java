@@ -6,6 +6,7 @@ public enum Mission {
     M102_CONFIGMAP("Externalized Configuration"),
     M103_SSO(null),
     M104_HEALTH_CHECK("Health Check"),
+    M106_CIRCUIT_BREAKER(null),
     ;
 
     public final String text;
