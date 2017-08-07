@@ -75,6 +75,9 @@ public class LaunchTest {
                             .contains(spec.runtime.text);
 
                     assertThat(readme)
+                            .as("README for .zip deployment should contain 'unzip'")
+                            .contains("unzip");
+                    assertThat(readme)
                             .as("README for .zip deployment shouldn't contain 'git clone'")
                             .doesNotContain("git clone");
                 });
