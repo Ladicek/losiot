@@ -16,9 +16,13 @@ public interface TestDriver {
 
     void loadInitialPage();
 
+    void login();
+
     void startWizard();
 
     void selectDeploymentType(DeploymentType deploymentType);
+
+    void checkIfNotLoggedIn();
 
     void selectMission(Mission mission);
 
@@ -26,7 +30,9 @@ public interface TestDriver {
 
     void setProjectInfo(MavenCoordinates coords);
 
-    void checkSummary(Mission mission, Runtime runtime, MavenCoordinates coords);
+    void checkSummary(DeploymentType deploymentType, Mission mission, Runtime runtime, MavenCoordinates coords);
 
     void downloadZip();
+
+    void checkNextSteps();
 }

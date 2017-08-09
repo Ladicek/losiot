@@ -1,5 +1,6 @@
 package com.github.ladicek.losiot;
 
+import com.github.ladicek.losiot.selenium.ElementSelectors;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -29,7 +30,13 @@ public final class StageTestDriver implements TestDriver {
     public void loadInitialPage() {
         driver.get(target.url);
 
+        wait.until(ExpectedConditions.elementToBeClickable(by.linkText("Log in")));
         wait.until(ExpectedConditions.elementToBeClickable(by.linkText("Prepare for Takeoff")));
+    }
+
+    @Override
+    public void login() {
+        // TODO
     }
 
     @Override
@@ -50,6 +57,12 @@ public final class StageTestDriver implements TestDriver {
         driver.findElement(by.buttonText("I will build and run locally")).click();
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(by.tagName("mission")));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("mission"), "Mission"));
+    }
+
+    @Override
+    public void checkIfNotLoggedIn() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(by.buttonText("Log in or register")));
     }
 
     @Override
@@ -62,6 +75,7 @@ public final class StageTestDriver implements TestDriver {
         next();
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(by.tagName("runtime")));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("runtime"), "Runtime"));
     }
 
     @Override
@@ -74,34 +88,42 @@ public final class StageTestDriver implements TestDriver {
         next();
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(by.tagName("projectinfo")));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("projectinfo"), "Project Info"));
     }
 
     @Override
     public void setProjectInfo(MavenCoordinates coords) {
         {
+            wait.until(ExpectedConditions.elementToBeClickable(by.cssSelector("input#groupId")));
             WebElement input = driver.findElement(by.cssSelector("input#groupId"));
             input.sendKeys(Keys.chord(Keys.CONTROL, "a"), Keys.DELETE, coords.groupId, Keys.TAB);
         }
 
         {
+            wait.until(ExpectedConditions.elementToBeClickable(by.cssSelector("input#artifactId")));
             WebElement input = driver.findElement(by.cssSelector("input#artifactId"));
             input.sendKeys(Keys.chord(Keys.CONTROL, "a"), Keys.DELETE, coords.artifactId, Keys.TAB);
         }
 
         {
+            wait.until(ExpectedConditions.elementToBeClickable(by.cssSelector("input#version")));
             WebElement input = driver.findElement(by.cssSelector("input#version"));
             input.sendKeys(Keys.chord(Keys.CONTROL, "a"), Keys.DELETE, coords.version, Keys.TAB);
         }
 
         next();
 
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("deploy"), "Your project is ready"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(by.tagName("deploy")));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("deploy"), "Review Summary"));
     }
 
     @Override
-    public void checkSummary(Mission mission, Runtime runtime, MavenCoordinates coords) {
+    public void checkSummary(DeploymentType deploymentType, Mission mission, Runtime runtime, MavenCoordinates coords) {
         String summary = driver.findElement(by.tagName("deploy")).getText();
 
+        assertThat(summary)
+                .as("Deployment type %s must be shown in summary", deploymentType)
+                .contains(deploymentType.text);
         assertThat(summary)
                 .as("Mission %s must be shown in summary", mission)
                 .contains(mission.text);
@@ -132,7 +154,20 @@ public final class StageTestDriver implements TestDriver {
         driver.findElement(by.buttonText("Download as ZIP File")).click();
     }
 
+    @Override
+    public void checkNextSteps() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(by.tagName("nextsteps")));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("nextsteps"), "Next Steps"));
+
+        String summary = driver.findElement(by.tagName("nextsteps")).getText();
+
+        assertThat(summary)
+                .as("Next steps should refer to README")
+                .contains("README.adoc");
+    }
+
     private void next() {
+        wait.until(ExpectedConditions.elementToBeClickable(by.buttonText("Next")));
         driver.findElement(by.buttonText("Next")).click();
     }
 }

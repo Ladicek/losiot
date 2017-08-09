@@ -1,4 +1,4 @@
-package com.github.ladicek.losiot;
+package com.github.ladicek.losiot.selenium;
 
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;

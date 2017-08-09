@@ -1,5 +1,6 @@
-package com.github.ladicek.losiot;
+package com.github.ladicek.losiot.selenium;
 
+import com.github.ladicek.losiot.DownloadedZip;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;

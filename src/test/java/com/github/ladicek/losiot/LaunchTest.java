@@ -1,5 +1,7 @@
 package com.github.ladicek.losiot;
 
+import com.github.ladicek.losiot.selenium.Selenium;
+import com.github.ladicek.losiot.selenium.SeleniumTestWatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
@@ -22,13 +24,15 @@ public class LaunchTest {
         TestDriver test = TestDriver.create(driver, spec.target);
 
         test.loadInitialPage();
+        test.login();
         test.startWizard();
         test.selectDeploymentType(spec.deploymentType);
         test.selectMission(spec.mission);
         test.selectRuntime(spec.runtime);
         test.setProjectInfo(spec.mavenCoordinates);
-        test.checkSummary(spec.mission, spec.runtime, spec.mavenCoordinates);
+        test.checkSummary(spec.deploymentType, spec.mission, spec.runtime, spec.mavenCoordinates);
         test.downloadZip();
+        test.checkNextSteps();
 
         try (DownloadedZip zip = DownloadedZip.find()) {
             String pomPath = spec.mavenCoordinates.artifactId + "/pom.xml";
@@ -93,5 +97,17 @@ public class LaunchTest {
             // ideally, we should unpack the .zip, run a Maven build, maybe execute tests etc. in here,
             // but this is already covered by booster testing, so it isn't high priority
         }
+    }
+
+    @Test
+    public void notLoggedIn() throws IOException {
+        TestSpec spec = TestSpec.fromSystemProperties();
+
+        TestDriver test = TestDriver.create(driver, spec.target);
+
+        test.loadInitialPage();
+        test.startWizard();
+        test.selectDeploymentType(spec.deploymentType);
+        test.checkIfNotLoggedIn();
     }
 }

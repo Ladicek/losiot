@@ -1,4 +1,4 @@
-package com.github.ladicek.losiot;
+package com.github.ladicek.losiot.selenium;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.SearchContext;

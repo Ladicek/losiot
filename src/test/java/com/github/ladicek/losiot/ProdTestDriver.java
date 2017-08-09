@@ -1,5 +1,6 @@
 package com.github.ladicek.losiot;
 
+import com.github.ladicek.losiot.selenium.ElementSelectors;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -10,8 +11,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public final class ProdTestDriver implements TestDriver {
-    private static final String HIDDEN_BUTTON_SELECTOR = "img[src='https://upload.wikimedia.org/wikipedia/commons/c/ce/Transparent.gif']";
-
     private final WebDriver driver;
     private final Wait<WebDriver> wait;
     private final ElementSelectors by;
@@ -31,16 +30,21 @@ public final class ProdTestDriver implements TestDriver {
     public void loadInitialPage() {
         driver.get(target.url);
 
-        wait.until(ExpectedConditions.elementToBeClickable(by.linkText("Request early access")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(by.cssSelector(HIDDEN_BUTTON_SELECTOR)));
+        wait.until(ExpectedConditions.elementToBeClickable(by.linkText("Log in")));
+        wait.until(ExpectedConditions.elementToBeClickable(by.linkText("Prepare for Takeoff")));
+    }
+
+    @Override
+    public void login() {
+        // TODO
     }
 
     @Override
     public void startWizard() {
-        driver.findElement(by.cssSelector(HIDDEN_BUTTON_SELECTOR)).click();
+        driver.findElement(by.linkText("Prepare for Takeoff")).click();
 
-        wait.until(ExpectedConditions.elementToBeClickable(by.buttonText("Set up manual project")));
-        wait.until(ExpectedConditions.elementToBeClickable(by.buttonText("Set up continuous delivery")));
+        wait.until(ExpectedConditions.elementToBeClickable(by.buttonText("I will build and run locally")));
+        wait.until(ExpectedConditions.elementToBeClickable(by.buttonText("Use OpenShift Online")));
     }
 
     @Override
@@ -50,33 +54,41 @@ public final class ProdTestDriver implements TestDriver {
             throw new UnsupportedOperationException("Deployment type " + deploymentType + " not yet implemented");
         }
 
-        driver.findElement(by.buttonText("Set up manual project")).click();
+        driver.findElement(by.buttonText("I will build and run locally")).click();
 
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("wizard"), "Missions are preconfigured, functioning applications"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(by.tagName("mission")));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("mission"), "Mission"));
+    }
+
+    @Override
+    public void checkIfNotLoggedIn() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(by.buttonText("Log in or register")));
     }
 
     @Override
     public void selectMission(Mission mission) {
-        driver.findElements(by.cssSelector("label"))
+        driver.findElements(by.cssSelector("mission label h3"))
                 .stream()
                 .filter(el -> el.getText().contains(mission.text))
                 .forEach(el -> el.findElement(by.tagName("input")).click());
 
         next();
 
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("wizard"), "We offer a choice of runtime frameworks"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(by.tagName("runtime")));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("runtime"), "Runtime"));
     }
 
     @Override
     public void selectRuntime(Runtime runtime) {
-        driver.findElements(by.cssSelector("h3"))
+        driver.findElements(by.cssSelector("runtime h2"))
                 .stream()
                 .filter(el -> el.getText().contains(runtime.text))
                 .forEach(WebElement::click);
 
         next();
 
-        wait.until(ExpectedConditions.visibilityOfElementLocated(by.tagName("form")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(by.tagName("projectinfo")));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("projectinfo"), "Project Info"));
     }
 
     @Override
@@ -101,13 +113,17 @@ public final class ProdTestDriver implements TestDriver {
 
         next();
 
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("deploy"), "Your project is ready"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(by.tagName("deploy")));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("deploy"), "Review Summary"));
     }
 
     @Override
-    public void checkSummary(Mission mission, Runtime runtime, MavenCoordinates coords) {
+    public void checkSummary(DeploymentType deploymentType, Mission mission, Runtime runtime, MavenCoordinates coords) {
         String summary = driver.findElement(by.tagName("deploy")).getText();
 
+        assertThat(summary)
+                .as("Deployment type %s must be shown in summary", deploymentType)
+                .contains(deploymentType.text);
         assertThat(summary)
                 .as("Mission %s must be shown in summary", mission)
                 .contains(mission.text);
@@ -136,6 +152,18 @@ public final class ProdTestDriver implements TestDriver {
     public void downloadZip() {
         wait.until(ExpectedConditions.elementToBeClickable(by.buttonText("Download as ZIP File")));
         driver.findElement(by.buttonText("Download as ZIP File")).click();
+    }
+
+    @Override
+    public void checkNextSteps() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(by.tagName("nextsteps")));
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(by.tagName("nextsteps"), "Next Steps"));
+
+        String summary = driver.findElement(by.tagName("nextsteps")).getText();
+
+        assertThat(summary)
+                .as("Next steps should refer to README")
+                .contains("README.adoc");
     }
 
     private void next() {
